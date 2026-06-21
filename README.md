@@ -32,9 +32,31 @@ node proxy.mjs
 
 ## 接入方式
 
-在你的 API 网关/客户端里，把 endpoint 指向 `http://你的IP:8792` 即可。请求格式跟 Anthropic 官方 API 完全一致。
+### 同一台 VPS
 
-支持流式（`stream: true`）和非流式。
+如果你的 API 网关和 claude-proxy 跑在同一台机器上，直接用 localhost：
+
+```
+endpoint: http://127.0.0.1:8792
+```
+
+不需要反代、不需要 nginx、不需要域名。
+
+### 跨服务器
+
+如果网关在另一台机器上，需要通过 nginx 反代暴露到公网：
+
+```nginx
+location /proxy/ {
+    proxy_pass http://127.0.0.1:8792/;
+    proxy_buffering off;
+    proxy_read_timeout 300s;
+}
+```
+
+然后网关的 endpoint 指向 `https://你的域名/proxy`。
+
+请求格式跟 Anthropic 官方 API 完全一致，支持流式（`stream: true`）和非流式。
 
 ## 注意
 
