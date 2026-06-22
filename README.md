@@ -64,3 +64,8 @@ location /proxy/ {
 - 每次请求 spawn 一个新的 `claude -p` 进程，有几秒冷启动延迟
 - 走的是你的 Max 订阅额度，不额外计费
 - `claude -p` 自带工具能力（Bash/Read/Write 等），proxy 不干涉
+
+## 相关项目
+
+- [claude-p-save-tokens](https://github.com/sanqianzilanyue-commits/claude-p-save-tokens) — 扒光工具省额度（约2.7万→几百token），订阅也能命中提示缓存。同一作者的省token方案
+- [claude-p-thinking-stream](https://github.com/sanqianzilanyue-commits/claude-p-thinking-stream) — 把 claude -p 的思维链接进网页做成流式
