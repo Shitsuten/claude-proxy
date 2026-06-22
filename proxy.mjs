@@ -7,7 +7,7 @@ import { spawn } from 'child_process';
 
 const PORT = parseInt(process.env.PROXY_PORT || '8792');
 const AUTH_TOKEN = process.env.PROXY_AUTH_TOKEN || '';
-const CLAUDE_CWD = process.env.CLAUDE_CWD || './';
+const CLAUDE_CWD = process.env.CLAUDE_CWD || '/opt/butter-web';
 
 function readBody(req) {
   return new Promise((res, rej) => {
@@ -56,7 +56,13 @@ const server = createServer(async (req, res) => {
     const isStream = body.stream !== false;
     const model = body.model || '';
 
+    const noTools = body.tools === undefined || body.tools === null || (Array.isArray(body.tools) && body.tools.length === 0);
     const args = ['-p', '--output-format', 'stream-json', '--verbose', '--dangerously-skip-permissions', '--include-partial-messages'];
+    if (noTools) args.push('--tools', 'none');
+    if (body.system) {
+      const sysText = typeof body.system === 'string' ? body.system : body.system.map(b => b.text || '').join('\n');
+      if (sysText) args.push('--system-prompt', sysText);
+    }
     if (model && model !== 'claude-sonnet-4-6') args.push('--model', model);
 
     const child = spawn('claude', args, { stdio: ['pipe', 'pipe', 'pipe'], cwd: CLAUDE_CWD });
